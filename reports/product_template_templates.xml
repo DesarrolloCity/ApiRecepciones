@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+      
+   <template id="report_producttemplatelabel">
+      <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="o">
+           <style type="text/css">
+                              table {
+                                     border-spacing: 5px;
+                              }
+                              span{
+                                font-size: 15px;
+                              }
+            </style>
+            <t t-foreach="o.product_tmpl_ids" t-as="p">
+                    <div class="page">
+                         <div class="o_label_name">
+                           <strong style = "font-size: 13px;" t-field="p.name"/>
+                          
+                         </div>   
+                         <t t-foreach="o.get_product_price(p.id)" t-as="j">
+                            <t t-if="j.min_quantity == 1">
+                              <t t-set="product_tax" t-value="o.get_product_price_with_tax(p.id,j.fixed_price)"/>
+                              <strong class="o_label_price" t-esc="product_tax" t-options="{'widget': 'monetary', 'label_price': True,'display_currency': j.currency_id}"/> Pieza
+                            </t> 
+                            
+                         </t>       
+                         
+                    </div>  
+
+                    <div class="col-12" style="padding:0;">
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="text-align: left; width: auto;" >
+                                        
+                                    </td>
+                                    <td style="text-align: center; width: auto;"  > 
+                                       Precio Unitario
+                                    </td>
+                                    <td style="text-align: center; width: auto;" >
+                                        Importe
+                                    </td>
+                                </tr>
+                               <t t-foreach="o.get_product_price(p.id)" t-as="l">
+                                 <t t-if="l.min_quantity > 1">  
+                                  <tr>
+                                    <td>
+                                        Pack <span t-field="l.min_quantity"/> Pzs
+                                    </td>
+                                    <td style="text-align: center;">
+                                         <t t-set="product_tax" t-value="o.get_product_price_with_tax(p.id,l.fixed_price)"/>
+                                         
+
+                                         <strong  class="o_label_price" t-esc="product_tax" t-options="{'widget': 'monetary', 'label_price': True,'display_currency': l.currency_id}"/>
+                                    </td>
+                                    <td style="text-align: center; ">
+                                       <t t-set="product_total" t-value="product_tax * l.min_quantity"/>
+                                        <strong class="o_label_price" t-esc="product_total" t-options="{'widget': 'monetary', 'label_price': True, 'display_currency': l.currency_id}"/>
+
+                                    </td>
+                                   </tr>
+                                  </t>
+                                </t>
+                                 
+                              </table>
+                              
+                              <table style="width:100%; padding-top: 70px; ">
+                                  <t t-if="p.barcode">
+                                    <tr>
+                                      <td>
+                                        <img style="width:60px; heigth: 70px;" t-att-src="image_data_uri(o.get_current_company())" alt="Logo"/>
+                                      </td>
+                                      <td style="text-align: center; vertical-align: rigth;">
+                                        <div t-field="p.barcode" t-options="{'widget': 'barcode', 'symbology': 'auto', 'width': 300, 'height': 150, 'img_style': 'width:70%;height:20%;'}"/>
+                                        <span t-field="p.barcode"/>
+                                      </td>
+                                    </tr>
+                                  </t>
+                           </table>
+                        
+                           
+                    </div>
+                   
+                    <div style="page-break-after: always;"/>
+             </t>
+               
+                   
+                    
+         </t>
+      </t>
+   </template>
+    </data>
+
+</odoo>

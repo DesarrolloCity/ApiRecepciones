@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+     
+
+       <record id="paperformat_label_sheet" model="report.paperformat">
+            <field name="name">A4 Label Sheet</field>
+           <field name="format">custom</field>
+           <field name="page_height">50</field>
+           <field name="page_width">90</field>
+           <field name="orientation">Portrait</field>
+           <field name="margin_top">1</field>
+           <field name="margin_bottom">0</field>
+           <field name="margin_left">1</field>
+           <field name="margin_right">1</field>
+           <field name="header_line" eval="False" />
+           <field name="header_spacing">0</field>
+           <field name="dpi">90</field>
+       </record>
+
+       <record id="report_product_template_label_makro" model="ir.actions.report">
+            <field name="name">Product.Label</field>
+            <field name="model">product.label.layout</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">price_label_makro.report_producttemplatelabel</field>
+            <field name="report_file">price_label_makro.report_producttemplatelabel</field>
+            <field name="paperformat_id" ref="price_label_makro.paperformat_label_sheet"/>
+            <field name="print_report_name">'Products Labels'</field>
+            <field name="attachment_use" eval="True"/>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+       </record>
+
+       <record id="view_product_form_report_button" model="ir.ui.view">
+        <field name="name">layout.form.view.session.button</field>
+        <field name="model">product.label.layout</field>
+        <field name="inherit_id" ref="product.product_label_layout_form"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='print_format']" position='after'>
+                <button name="view_labels_report" type="object" string="Etiquetas con precio" class="oe_highlight"/>
+            </xpath>
+        </field>
+     </record>
+        
+    	
+
+
+    </data>
+</odoo>
