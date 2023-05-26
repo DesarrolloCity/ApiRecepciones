@@ -5,7 +5,7 @@ from odoo import models, fields, api
 from random import randint
 from odoo.exceptions import UserError
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
-
+from odoo.tools.translate import _
     
 class Label(models.Model):
     _inherit = ['product.template']
@@ -29,13 +29,19 @@ class productLayout(models.TransientModel):
             ('date_end', '>=', current),
             ('date_end', '=', False),
             ('product_tmpl_id', 'in', [id])
-         ],order='date_end desc, min_quantity asc',limit=3)
+         ],order='date_end,create_date desc')
+        price_list_products_ids = sorted(price_list_products_ids, key=lambda x: x.min_quantity)
 
-        
+        count = len(price_list_products_ids)
+        print(f"Count:  {count}")
+        if count < 1 :
+              raise UserError('Producto no tiene al menos 1 precio, favor de verificar.')
+      
         for item in price_list_products_ids: 
-           print(str(item.date_end) + " " + str(item.fixed_price))
+            print(str(item.date_end) + " " + str(item.fixed_price))
 
         return price_list_products_ids
+          
     def get_product_price_with_tax(self,id,price):
         product = self.env['product.template'].browse(id)
 
@@ -46,11 +52,11 @@ class productLayout(models.TransientModel):
         for tax in taxes:
           tax_name = tax.name
           tax_amount = tax.amount
-         
+           
         tax_product = ((tax_amount / 100)  *  price) + price
         print(f"Impuesto2 : {(tax_amount / 100)}, Precio: { price }")
         print(f"Impuesto: {tax_product}, Tasa: {round((tax_amount / 100),2)  *  price}")
-        
+                  
         return tax_product
 
     def view_labels_report(self):
