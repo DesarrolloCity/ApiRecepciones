@@ -22,7 +22,7 @@ class productLayout(models.TransientModel):
         current = fields.Datetime.now()
         current.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         product_price= {}
-        print("id : " + str(id))
+        #print("id : " + str(id))
         price_list_products_ids= self.env['product.pricelist.item'].search([
              '&',
              '|',
@@ -33,12 +33,7 @@ class productLayout(models.TransientModel):
         price_list_products_ids = sorted(price_list_products_ids, key=lambda x: x.min_quantity)
 
         count = len(price_list_products_ids)
-        print(f"Count:  {count}")
-        if count < 1 :
-              raise UserError('Producto no tiene al menos 1 precio, favor de verificar.')
-      
-        for item in price_list_products_ids: 
-            print(str(item.date_end) + " " + str(item.fixed_price))
+        #print(f"Count:  {count}")
 
         return price_list_products_ids
           
@@ -49,17 +44,33 @@ class productLayout(models.TransientModel):
         taxes = product.taxes_id 
 
         # Recorrer los impuestos y obtener la información relevante
-        for tax in taxes:
-          tax_name = tax.name
+        
+        if len(taxes) > 1:
+         for tax in taxes:
+        
           tax_amount = tax.amount
-           
-        tax_product = ((tax_amount / 100)  *  price) + price
-        print(f"Impuesto2 : {(tax_amount / 100)}, Precio: { price }")
-        print(f"Impuesto: {tax_product}, Tasa: {round((tax_amount / 100),2)  *  price}")
+         
+          tax_product = ((tax_amount / 100)  *  price) + price
+          #print(f"Impuesto2 : {(tax_amount / 100)}, Precio: { price }")
+          #print(f"Impuesto: {tax_product}, Tasa: {round((tax_amount / 100),2)  *  price}")
                   
-        return tax_product
+          return tax_product
+        else:
+          return price
 
     def view_labels_report(self):
+               
+        for item in self.product_tmpl_ids: 
+            #print(f"Tipo : {(item.type)}")
+            
+            if (item.type == 'service'):
+               raise UserError(str(item.name) + ' no es producto almacenable, favor de verificar' )
+            
+            if (len(item.taxes_id) < 1):
+               raise UserError('El Producto '+ str(item.name) + ', no tiene impuestos favor verifique' )
+            
+            
+          
         return self.env.ref('price_label_makro.report_product_template_label_makro').report_action(self)
     
     def get_current_company(self):
